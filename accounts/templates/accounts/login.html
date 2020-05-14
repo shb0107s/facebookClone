@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block head %}
+
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+{% endblock %}
+
+{% block contents %}
+
+<section id="container">
+
+
+    <div id="login_section">
+        <h1 class="logo"><a href="#" class="icon--main-logo"></a>FACEBOOK</h1>
+        <form method="POST" action="{% url 'accounts:login' %}">
+            <!-- 보안을 위한 장치. 
+                DB에서 token을 발행. 
+                이후 form으로 입력이 들어왔을 때 db에서 발행한 token값과 같은지 비교해서
+                외부에서의 해킹 공격이 아닌 것을 체크하는 내용 -->
+            {% csrf_token %}
+
+            <div class="id_section">
+                <div><label for="id_username">아이디</label></div>
+                <div><input type="text" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}"></div>
+            </div>
+
+            <div class="pw_section">
+                <div><label for="pw_field">비밀번호</label></div>
+                <div><input type="password" id="{{ form.password.id_for_label }}" name="{{ form.password.html_name }}"></div>
+            </div>
+
+            <input type="submit" value="SIGN IN" id="submitBtn">
+
+            <div class="signup"><a href="{% url 'accounts:signup' %}">아직도 회원이 아니신가요?</a></div>
+
+        </form>
+    </div>
+
+
+</section>
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}
