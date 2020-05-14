@@ -28,7 +28,6 @@ window.addEventListener('DOMContentLoaded',function(){
 
 
 
-
         leftBox.style.right = `${innerWidth*0.5 + 430}px`;
         rightBox.style.left = `${innerWidth*0.5 + 90}px`;
 
