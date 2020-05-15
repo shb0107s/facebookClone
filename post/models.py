@@ -35,8 +35,56 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    like_user_set = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                           blank=True,  # 기존에 만들었던 모델에 새로운 필드를 추가할 때는 blank=True를 줘야 문제가 생기지 않는다.
+                                           related_name='like_post_set',  # 나중에 이 이름으로 찾을 수 있다.
+                                           through='Like')  # Like class와 연결
+
+    bookmark_user_set = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                               blank=True,
+                                               related_name='bookmark_post_set',
+                                               through='Bookmark')
+
+    class Meta:
+        ordering = ['-created_at']
+
+    @property
+    def like_count(self):
+        return self.like_user_set.count()
+
+    @property
+    def bookmark_count(self):
+        return self.bookmark_user_set.count()
+
+
     def __str__(self):
         return self.content
+
+
+class Like(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # 클래스 전체의 규칙을 정한다.
+        unique_together = (
+            ('user', 'post')
+        )
+
+
+class Bookmark(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # 클래스 전체의 규칙을 정한다.
+        unique_together = (
+            ('user', 'post')
+        )
 
 
 

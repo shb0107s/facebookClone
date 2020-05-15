@@ -1,0 +1,78 @@
+<script type="text/javascript">
+(function() {
+    
+    const delegation = document.querySelector('#contents_container')
+    const text_field = document.querySelector('#text_field')
+    
+    function delegationFunc(e){
+        let elem = e.target  // 클릭 타겟을 구분해 각기 다른 작업을 할 수 있다.
+        console.log(elem)
+
+        while(!elem.getAttribute('data-name')){  // data-name을 갖는 node elem 탐색
+            elem = elem.parentNode
+
+            if(elem.nodeName === 'BODY'){
+                elem = null
+                return
+            }
+        }
+        
+        // 좋아요 기능
+        if(elem.matches('[data-name="heartbeat"]')){
+            //console.log('하트:')
+
+            const pk = elem.getAttribute('name')
+            console.log(pk)
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'post:post_like' %}",  // html에 직접 삽일 할 때의 장점. js에서 django의 문법 사용 가능
+                data: {'pk': pk, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: "json",
+                success: function(response){
+                    const likeCount = document.querySelector('#like-count-'+pk)
+                    likeCount.innerHTML = response.like_count
+                },
+                error: function(request, status, error){
+                    alert("code:" + request.status + "\nmessage:" + request.responseText + "\nerror:" + error)
+                }
+            })
+        }
+
+        // 좋아요 버튼 색상 toggle
+        elem.classList.toggle('active')
+
+
+        // 북마크 기능
+        if(elem.matches('[data-name="bookmark"]')){
+            //console.log('북마크')
+            
+            const pk = elem.getAttribute('name')
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'post:post_bookmark' %}",
+                data: {'pk': pk, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: "json",
+                success: function(response){
+                    let btn_bookmark_text = ""
+
+                    if(response.is_bookmarked === 'N')
+                        btn_bookmark_text = "저장하기"
+                    else if(response.is_bookmarked === 'Y')
+                        btn_bookmark_text = "저장됨"
+
+                    const bookmark = document.querySelector('.bookmark').innerHTML = btn_bookmark_text
+                },
+                error: function(request, status, error){
+                    alert("code:" + request.status + "\nmessage:" + request.responseText + "\nerror:" + error)
+                }
+            })
+        }
+    }
+
+    delegation.addEventListener('click', delegationFunc)
+
+})(); // 익명함수
+
+</script>

@@ -41,3 +41,43 @@ class Profile(models.Model):
                      max_length=10,
                      choices=GENDER_C,
                      default='N')
+
+
+class Friend(models.Model):
+    # 상대방
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, on_delete=models.CASCADE)
+    # room = models.ForeignKey(Room, blank=True, on_delete=models.SET_NULL, null=True)
+
+    # 현재 로그인한 나
+    # related_name은 friend 클래스를 바라볼 때 쓸 수 있는 이름. 일종의 주소
+    current_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='friends', blank=True, on_delete=models.CASCADE)
+
+    created_at = models.DateField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.user.username  # username이 Friend의 대표값이 된다.
+
+
+# 친구 요철을 보내고 받는 모델 생성
+class FriendRequest(models.Model):
+    # 요청을 보내는 쪽
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='friend_requests', on_delete=models.CASCADE)
+
+    # 요청을 받는 쪽
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='requested_friend_requests', on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user}"
+
+    class Meta:
+        unique_together = (
+            ('from_user', 'to_user')
+        )
+
+
+
+
+
+
