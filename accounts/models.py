@@ -24,10 +24,10 @@ class Profile(models.Model):
     # CharField는 max_length가 필수 값
     nickname = models.CharField('별명', max_length=30, unique=True)
     picture = ProcessedImageField(upload_to=user_path, 
-                        processors=[ResizeToFill(150,150)],
-                        format='JPEG',
-                        options={'quality': 90},
-                        blank=True)
+                                  processors=[ResizeToFill(150,150)],
+                                  format='JPEG',
+                                  options={'quality': 90},
+                                  blank=True)
 
     about = models.CharField(max_length=300, blank=True)
 

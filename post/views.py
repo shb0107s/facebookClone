@@ -1,6 +1,7 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render ,redirect
 from django.contrib.auth import get_user_model
 from .models import *
+from .forms import *
 
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -12,11 +13,13 @@ import json
 def post_list(request):
     post_list = Post.objects.all()
 
+    comment_form = CommentForm()
+
     if request.user.is_authenticated:
         username = request.user
 
         friends = username.friends.all()  # 친구 목록
-        request_friends = username.friends_requests  # 친구 요청 목록
+        request_friends = username.friend_requests  # 친구 요청 목록
 
         user = get_object_or_404(get_user_model(), username=username)
 
@@ -26,23 +29,60 @@ def post_list(request):
         user_profile = user.profile
 
         friend_list = user.friends.all()
-        my_friends_user_list = list(map(lambda friend: friend.user, friend_list))
+        my_friend_user_list = list(map(lambda friend: friend.user, friend_list))
         # map : 리스트로부터 원소를 하나씩 꺼내서 함수를 적용시킨 다음, 그 결과를 새로운 리스트에 담아줌
         
-        friend_request_list = user.friends_requests.all()
+        friend_request_list = user.friend_requests.all()
         my_friend_request_user_list = list(map(lambda friend_request: friend_request.to_user, friend_request_list))
 
         return render(request, 'post/post_list.html', {
             'user_profile': user_profile,
             'posts': post_list,
+            'comment_form': comment_form,
             'friends': friends,
             'request_friends': request_friends,
-            'my_friends_user_list': my_friends_user_list,
-            'my_friend_request_user_list': my_friend_request_user_list,
+            'my_friend_user_list': my_friend_user_list,
+            'my_friend_request_user_list': my_friend_request_user_list
         })
 
     else:
-        return render(request, 'post/post_list.html', {'posts': post_list,})
+        return render(request, 'post/post_list.html', {
+            'posts': post_list,
+            'comment_form': comment_form
+        })
+
+
+@login_required
+def comment_new(request):
+    pk = request.POST.get('pk')
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)  # commit=False 옵션은 중복으로 저장되는 것을 막기 위한 옵션이다.(하나가 저장될 때까지 지연)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
+            return render(request, 'post/comment_new_ajax.html', {
+                'comment': comment
+            })
+            
+    return redirect('post:post_list')
+
+
+@login_required
+def comment_delete(request):
+    pk = request.POST.get('pk')
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.method == 'POST' and request.user == comment.author:
+        comment.delete()
+        message = "삭제완료"
+        status = 1
+    else:
+        message = "잘못된 접근입니다"
+        status = 0
+
+    return HttpResponse(json.dumps({'message': message, 'status': status}), content_type="application/json")
 
 
 @login_required  # 로그인된 상태에서만

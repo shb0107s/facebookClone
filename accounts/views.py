@@ -73,8 +73,8 @@ def accept_friend_request(request):
 
         # 채팅방 생성
         #room = Room.objects.create(room_name=room_name)
-        Friend.objects.create(user=from_user, current_user=to_user, room=room)
-        Friend.objects.create(user=to_user, current_user=from_user, room=room)
+        Friend.objects.create(user=from_user, current_user=to_user) #, room=room)
+        Friend.objects.create(user=to_user, current_user=from_user) #, room=room)
         
         # 작업완료된 친구요청을 삭제
         friend_request.delete()

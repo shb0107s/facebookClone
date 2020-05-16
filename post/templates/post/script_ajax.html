@@ -69,6 +69,59 @@
                 }
             })
         }
+    
+        // 친구 신청
+        if(elem.matches('[data-name="friend_request"]')){
+            //console.log('친구요청')
+            const user_id = elem.getAttribute('name')
+            //console.log(user_id)
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'accounts:create_friend_request' %}",
+                data: {
+                    'pk': user_id,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                dataType: "json",
+                success: function(request){
+                    alert('성공')
+                    elem.innerHTML = "친구요청중"
+                }
+            })
+
+        }
+
+
+        // comment 추가
+        if(elem.matches('[data-name="comment"]')){
+            const pk = elem.getAttribute('name')
+            const content = document.querySelector('#add-comment-post'+pk+'>div>input[type=text]').value
+
+            if(content.length > 140){
+                alert("댓글은 최대 140자 입력 가능합니다. 현재 글자수: "+ content.length)
+                return
+            }
+            if(content.length == 0){
+                alert("글자를 입력해주세요: "+ content.length)
+                return
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'post:comment_new' %}",
+                data: {
+                    'pk': pk,
+                    'content': content,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                dataType: "html",
+                success: function(data, textStatus, jqXHR){
+                    document.querySelector("#comment-list-ajax-post" + pk).insertAdjacentHTML("afterbegin", data)
+                    location.reload()
+                }
+            })
+        }
     }
 
     delegation.addEventListener('click', delegationFunc)
