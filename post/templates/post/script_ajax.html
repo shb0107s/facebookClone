@@ -2,7 +2,7 @@
 (function() {
     
     const delegation = document.querySelector('#contents_container')
-    const text_field = document.querySelector('#text_field')
+    const textField = document.querySelector('#text_field')
     
     function delegationFunc(e){
         let elem = e.target  // 클릭 타겟을 구분해 각기 다른 작업을 할 수 있다.
@@ -38,10 +38,6 @@
                 }
             })
         }
-
-        // 좋아요 버튼 색상 toggle
-        elem.classList.toggle('active')
-
 
         // 북마크 기능
         if(elem.matches('[data-name="bookmark"]')){
@@ -103,7 +99,7 @@
                 return
             }
             if(content.length == 0){
-                alert("글자를 입력해주세요: "+ content.length)
+                alert("글자를 하나라도 넣어주세요. 현재 글자수 :"+content.length)
                 return
             }
 
@@ -122,8 +118,96 @@
                 }
             })
         }
+
+        // comment 삭제
+        if(elem.matches('[data-name="comment_delete"]')){
+            const pk = elem.getAttribute('name')
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'post:comment_delete' %}",
+                data: {
+                    'pk': pk,
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
+                },
+                dataType: "json",
+                success: function(response){
+                    if(response.status){
+                        document.querySelector("#comment"+pk).remove()
+                        location.reload()
+                    }
+                }
+            })
+        }
+
+        // post 추가
+        if(elem.matches('[data-name="add"]')){
+            //console.log("글추가")
+            textField.style.height = '100px'
+            submit.disabled = false
+            submit.parentNode.style.display = 'block'
+        }
+
+        // 좋아요, more 버튼 toggle
+        elem.classList.toggle('active')
     }
 
+
+    function scrollfunc(){
+        // pageYOffset : Window 안의 Document가 수직 방향으로 스크롤된 거리를 픽셀 단위로 나타낸 부동소숫점 수
+        // innerHeight : 창 틀을 뺀 창 높이
+        const scrollHeight = pageYOffset + window.innerHeight
+        
+        // 스크롤 시키지 않았을때의 전체 높이
+        const documentHeight = document.body.scrollHeight
+
+        // 스크롤 다 내리면
+        if(scrollHeight >= documentHeight){
+            const page = document.querySelector('#page').value
+
+            console.log(page)
+
+
+            const end_page = "{{ posts.paginator.num_pages }}"
+            if(page > end_page)
+                return
+            
+            document.querySelector('#page').value = parseInt(page) + 1
+            callMorePostAjax(page)
+        }
+    }
+
+    function callMorePostAjax(page){
+        const end_page = "{{ posts.paginator.num_pages }}"
+
+        console.log('callmore')
+
+        if(page > end_page)
+            return
+        
+        $.ajax({
+            type: "POST",
+            url: "{% url 'post:post_list' %}",
+            data: {
+                'page': page,
+                'csrfmiddlewaretoken': "{{ csrf_token }}",
+            },
+            dataType: "html",
+            success: addMorePostAjax,
+            error: function(request, status, error){
+                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            }
+        })
+    }
+
+    function addMorePostAjax(data, textStatus, jqXHR){
+        let post = document.querySelector('#post_list_ajax')
+
+        post.insertAdjacentHTML("beforeend", data)
+    }
+
+
+    window.addEventListener('scroll', scrollfunc)    
     delegation.addEventListener('click', delegationFunc)
 
 })(); // 익명함수

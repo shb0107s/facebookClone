@@ -1,0 +1,72 @@
+{% extends 'post/layout.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/edit.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div id="edit_container">
+        <div class="post_form_container">
+            <form action="#" class="post_form" method="post" enctype="multipart/form-data">
+                <div class="title">
+                    Edit Post
+                </div>
+
+                <div class="preview">
+                    <div class="upload">
+                        <div class="post_btn">
+                            {% if post %}
+                                <p><img id="img_id" src="{{ post.photo.url }}" alt="" style="width: 300px; height: 300px; object-fit: cover;"></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <input type="submit" class="submit_btn" value="수정완료">
+
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        const photo = document.querySelector('#img_id')
+        document.querySelector('#photo-clear_id').remove()  // 현재 파일을 취소하는 체크박스 삭제(불필요..?)
+        document.querySelector("label[for='photo-clear_id']").remove()  // 체크박스의 라벨 삭제
+
+        function upload_img(input){
+            /* input 안에는 File 객체들이 마치 배열처럼 들어있다.
+             * ex. {name: 'zerocho.png', // 파일 이름
+             *      size: 74120, // byte 단위 파일 크기
+             *      lastModified:  1495791249810, // 올린 시간 timestamp
+             *      type: 'image/png'}  
+             */
+            var reader = new FileReader()
+            if(input.files && input.files[0]){
+                reader.onload = function(e){
+                    // FileReader.onload : 이벤트는 읽기 동작이 성공적으로 완료 되었을 때마다 발생합니다.
+                    photo.setAttribute('src', e.target.result)
+                    // e.target: FileReader {readyState: 2, result: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARcA…8c3dsIrzERK4RSSRc+R/VMc+oRo+p3AAAAABJRU5ErkJggg==", error: null, onloadstart: null, onprogress: null, …}
+                }
+                reader.readAsDataURL(input.files[0])
+            }
+        }
+
+        let idPhoto = document.querySelector('#id_photo')  // form.as_p로 자동 생성된 field들은 id_{ field }와 같은 id를 가진다.
+
+        idPhoto.addEventListener('change', function(){
+            upload_img(this)
+        })
+
+
+    </script>
+
+
+
+{% endblock %}
+
+

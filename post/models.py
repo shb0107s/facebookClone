@@ -35,6 +35,8 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    tag_set = models.ManyToManyField('Tag', blank=True)
+
     like_user_set = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                            blank=True,  # 기존에 만들었던 모델에 새로운 필드를 추가할 때는 blank=True를 줘야 문제가 생기지 않는다.
                                            related_name='like_post_set',  # 나중에 이 이름으로 찾을 수 있다.
@@ -48,6 +50,18 @@ class Post(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+    def tag_save(self):
+        # self.content에서 hash tag가 붙어있는 단어를 찾는다.
+        tags = re.findall(r'#(\w+)\b', self.content)
+
+        if not tags:
+            return
+        
+        for t in tags:
+            tag, tag_created = Tag.objects.get_or_create(name=t)
+            self.tag_set.add(tag)
+
+
     @property
     def like_count(self):
         return self.like_user_set.count()
@@ -59,6 +73,13 @@ class Post(models.Model):
 
     def __str__(self):
         return self.content
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=140, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Like(models.Model):

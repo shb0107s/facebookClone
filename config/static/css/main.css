@@ -312,7 +312,8 @@
 .contents .hidden_menu > li:hover{
     background: #ddd;
 }
-.contents .hidden_menu > li > *{
+.contents .hidden_menu > li > *,
+.contents .hidden_menu > li > form > *{
     background: transparent;
     border: none;
     font-size: 12px;

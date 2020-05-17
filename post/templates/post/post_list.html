@@ -1,5 +1,6 @@
 {% extends 'layout.html' %} <!-- 이 laout.html은 같은 post폴더 내의 file이다.-->
 {% load static %}
+{% load post_extras %}
 
 {% block head %}
 
@@ -96,12 +97,23 @@
                                         {% else %}
                                         <li><button class="friend_request" data-name="friend_request" name="{{ post.author.profile.user.id }}">친구요청하기</button></li>
                                         {% endif %}
+
+                                        {% if post.author == user %}
+                                            <li><a href="{% url 'post:post_edit' post.pk %}">수정</a></li>
+                                            <li>
+                                                <form action="{% url 'post:post_delete' post.pk %}" method="post">
+                                                    {% csrf_token %}
+                                                    <input type="submit" class="post-delete" value="삭제">
+                                                </form>
+                                            </li>
+
+                                        {% endif %}
                                     </ul>
                                 </div>
                             </div>
                         </header>
                         <div class="main_article">
-                            {{  post.content }}
+                            {{  post|add_link|safe|linebreaksbr }}
                         </div>
                         <div class="img_section"><img src="{{ post.photo.url }}" alt=""></div>
                         <div class="ajax_field">
@@ -153,16 +165,11 @@
                                     </button>
                                 </div>
                             {% endif %}
-
-                            <div id="post_list_ajax"></div><!-- 무한스크롤을 하기위한 부분 -->
-                            <input type="hidden" id="page" value="2">
                         </div>
-
                     </article>
-
-
-
                 {% endfor %}
+                <div id="post_list_ajax"></div><!-- 무한스크롤을 하기위한 부분 -->
+                <input type="hidden" id="page" value="2">
             </div>
 
         </section>
