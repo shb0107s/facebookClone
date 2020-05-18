@@ -26,7 +26,7 @@ def post_list(request, tag=None):
 
     paginator = Paginator(post_list, 3)
     page_num = request.POST.get('page')
-    print("page_num: ", page_num)
+    # print("page_num: ", page_num) # 불러올 페이지
 
     try:
         posts = paginator.page(page_num)

@@ -1,5 +1,5 @@
 <script type="text/javascript">
-(function() {
+(function(){
     
     const delegation = document.querySelector('#contents_container')
     const textField = document.querySelector('#text_field')
@@ -19,7 +19,7 @@
         
         // 좋아요 기능
         if(elem.matches('[data-name="heartbeat"]')){
-            //console.log('하트:')
+            //console.log('하트!')
 
             const pk = elem.getAttribute('name')
             console.log(pk)
@@ -80,9 +80,12 @@
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                 },
                 dataType: "json",
-                success: function(request){
-                    alert('성공')
+                success: function(response){
+                    console.log('성공')
                     elem.innerHTML = "친구요청중"
+                },
+                error: function(request, status, error){
+                    alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error)
                 }
             })
 
@@ -115,6 +118,9 @@
                 success: function(data, textStatus, jqXHR){
                     document.querySelector("#comment-list-ajax-post" + pk).insertAdjacentHTML("afterbegin", data)
                     location.reload()
+                },
+                error: function(request, status, error){
+                    alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error)
                 }
             })
         }
@@ -136,6 +142,9 @@
                         document.querySelector("#comment"+pk).remove()
                         location.reload()
                     }
+                },
+                error: function(request, status, error){
+                    alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error)
                 }
             })
         }
@@ -180,7 +189,7 @@
     function callMorePostAjax(page){
         const end_page = "{{ posts.paginator.num_pages }}"
 
-        console.log('callmore')
+        //console.log('callmore')
 
         if(page > end_page)
             return
@@ -195,7 +204,7 @@
             dataType: "html",
             success: addMorePostAjax,
             error: function(request, status, error){
-                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error)
             }
         })
     }
@@ -210,6 +219,6 @@
     window.addEventListener('scroll', scrollfunc)    
     delegation.addEventListener('click', delegationFunc)
 
-})(); // 익명함수
+})() // 익명함수
 
 </script>
