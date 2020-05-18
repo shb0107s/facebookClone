@@ -5,6 +5,7 @@ from django.contrib.auth import logout as django_logout
 from .forms import SignupForm, LoginForm
 from django.http import HttpResponse
 import json
+from chat.models import *
 
 
 # Create your views here.
@@ -56,10 +57,10 @@ def create_friend_request(request):
 
 def accept_friend_request(request):
     friend_request_id = request.POST.get('pk', None)
-    
+
     # 요청 불러오기
     friend_request = FriendRequest.objects.get(pk=friend_request_id)
-    
+
     # current user 가져오기
     from_user = friend_request.from_user
 
@@ -69,13 +70,13 @@ def accept_friend_request(request):
     try:
         # 친구관계 생성
         # 채팅방 이름 생성
-        #room_name = f"{from_user.username},{to_user.username}"
+        room_name = f"{from_user.username},{to_user.username}"
 
         # 채팅방 생성
         #room = Room.objects.create(room_name=room_name)
         Friend.objects.create(user=from_user, current_user=to_user) #, room=room)
         Friend.objects.create(user=to_user, current_user=from_user) #, room=room)
-        
+
         # 작업완료된 친구요청을 삭제
         friend_request.delete()
 

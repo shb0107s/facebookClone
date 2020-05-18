@@ -3,6 +3,8 @@ from django.conf import settings
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 import re  # regular expressions
+from chat.models import *
+
 
 # Create your models here.
 
@@ -46,7 +48,7 @@ class Profile(models.Model):
 class Friend(models.Model):
     # 상대방
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, on_delete=models.CASCADE)
-    # room = models.ForeignKey(Room, blank=True, on_delete=models.SET_NULL, null=True)
+    room = models.ForeignKey(Room, blank=True, on_delete=models.SET_NULL, null=True)
 
     # 현재 로그인한 나
     # related_name은 friend 클래스를 바라볼 때 쓸 수 있는 이름. 일종의 주소
