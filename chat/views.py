@@ -7,7 +7,7 @@ import logging
 
 # Create your views here.
 def chat_list(request):
-    user = request.name
+    user = request.user
     user_profile = user.profile
 
     friends = user.friends.all()
@@ -24,6 +24,7 @@ def room(request, room_id):
     friends = user.friends.all()
     room = Room.objects.get(pk=room_id)
     friend_user = room.users.all().exclude(pk=user.id).first()
+    print('friend_user: ', friend_user)
 
     return render(request, 'chat/room.html', {
         'current_user': user,

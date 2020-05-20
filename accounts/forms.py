@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 class LoginForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ('username', 'password')
 
 
 # UserCreationForm 이미 존재하는 회원가입 form을 상속받아서 사용
