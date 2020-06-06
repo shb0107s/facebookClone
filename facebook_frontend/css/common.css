@@ -721,6 +721,10 @@ body {
     display: none;
 }
 
+#header .bell.on .notice {
+    display: block;
+}
+
 #header .icon--arrow-top {
     position: absolute;
     top: -16px;
@@ -770,3 +774,35 @@ body {
 }
 
 
+
+@media screen and (max-width:1240px) {
+    #wrapper .left_box,
+    #wrapper .right_box,
+    #side_box {
+        display: none;
+    }
+
+    #header .inner {
+        padding-right: 0;
+        width: 90%;
+    }
+}
+
+@media screen and (max-width:800px) {
+    #header .inner .left {
+        display: none;
+    }
+
+    #header .inner .right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    #header .inner .right > div:after {
+        display: none;
+    }
+
+    #header .inner .right .question {
+        margin-right: 20px;
+    }
+}
