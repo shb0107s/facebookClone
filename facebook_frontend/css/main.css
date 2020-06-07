@@ -15,10 +15,9 @@
 #wrapper .inner .left_box {
     width: 180px;
     height: 500px;
-    /* background-color: tomato; */
     position: fixed;
     top: 52px;
-    left: 300px;
+    /* left: 300px; */
     font-size: 13px;
 }
 
@@ -117,9 +116,9 @@
     font-size: 15px;
 }
 
-.create_box .text_field .middle {
+/* .create_box .text_field .middle {
 
-}
+} */
 
 .create_box .text_field .bottom {
     font-size: 12px;
@@ -277,6 +276,11 @@
     margin: 0 10px;
 }
 
+.contents .btn_container .like_btn.active span {
+    background: url("../imgs/bg05.png") no-repeat 0 -422px;
+}
+
+
 .contents .btn_container > div {
     flex: 1;
     display: flex;
@@ -349,12 +353,14 @@
 }
 
 
+/********************************  Right Box  ********************************/
+
 
 #wrapper .right_box {
     width: 308px;
     background-color: #fff;
     position: fixed;
-    right: 550px;
+    /* right: 550px; */
     top: 52px;
     border-radius: 3px;
     padding-bottom: 20px;
@@ -383,7 +389,7 @@
 .right_box .detail .name {
     color: var(--fds-fb-blue-75);
     font-size: 14px;
-    font-weight; bold;
+    font-weight: bold;
     margin-bottom: 10px;
 }
 
