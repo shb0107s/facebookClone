@@ -319,6 +319,11 @@
     font-weight: 300;
 }
 
+.contents .comment_container .delete {
+    margin-left: auto;
+    cursor: pointer;
+}
+
 .contents .comment_input {
     display: flex;
     padding: 10px 20px;
